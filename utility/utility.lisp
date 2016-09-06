@@ -45,10 +45,10 @@
 				(symbol (string-downcase thing)))))
 
 (prototype find-systems(system-designator)pathnames)
-#@(:ql-dist #:dist #:release #:short-description)
+#@(:ql-dist #:find-system #:dist #:release #:short-description)
 
 (defun find-systems(system)
-  (let*((release(release system))
+  (let*((release(release(find-system system)))
 	(sd(short-description release)))
     (loop :for pathname :in (installed-systems(dist release))
 	  :when(system-name= sd pathname)
