@@ -1,5 +1,5 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :ql-tools.degenerate
-  :depends-on (:musam :ql-tools.utility :nitch-util :named-readtables)
+  :depends-on (:ql-tools.utility :with-package)
   :components((:file "degenerate")))

@@ -4,11 +4,13 @@
     #:coerce-name
     #:version<=pathname
     #:bottom-directory-namestring
+    #:find-systems
     ;; type
     #:pathnames
     #:system-designator
     ))
 (in-package :ql-tools.utility)
+(named-readtables:in-readtable with-package:syntax)
 
 (define-simple-type(pathnames (:element-type pathname)
 			      (:element-predicate pathnamep)))
@@ -41,3 +43,19 @@
 				(pathname (bottom-directory-namestring thing))
 				(string thing)
 				(symbol (string-downcase thing)))))
+
+(prototype find-systems(system-designator)pathnames)
+#@(:ql-dist #:dist #:release #:short-description)
+
+(defun find-systems(system)
+  (let*((release(release system))
+	(sd(short-description release)))
+    (loop :for pathname :in (installed-systems(dist release))
+	  :when(system-name= sd pathname)
+	  :collect pathname :into pathnames
+	  :finally (return(sort pathnames(complement #'<)
+				:key #'version<=pathname)))))
+
+(defun system-name=(thing1 thing2)
+  (string=(coerce-name thing1)(coerce-name thing2)))
+

@@ -1,4 +1,4 @@
-(defpackage :ql-tools.degenerate(:use :cl :ql-tools.utility :nitch-util.type :named-readtables)
+(defpackage :ql-tools.degenerate(:use :cl :ql-tools.utility)
   (:export
     #:degenerate
     ))
@@ -30,21 +30,6 @@
 			   :test #'string=))
 	     systems)
 	(error "No previous systems of ~S" system))))
-
-(prototype find-systems(system-designator)pathnames)
-#@(:ql-dist #:dist #:release #:short-description)
-
-(defun find-systems(system)
-  (let*((release(release system))
-	(sd(short-description release)))
-    (loop :for pathname :in (installed-systems(dist release))
-	  :when(system-name= sd pathname)
-	  :collect pathname :into pathnames
-	  :finally (return(sort pathnames(complement #'<)
-				:key #'version<=pathname)))))
-
-(defun system-name=(thing1 thing2)
-  (string=(coerce-name thing1)(coerce-name thing2)))
 
 (defun backup(system)
   (with-open-file(*standard-output* (backup-file)
