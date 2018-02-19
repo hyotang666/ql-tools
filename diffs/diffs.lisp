@@ -6,18 +6,18 @@
 (in-package :ql-tools.diffs)
 (named-readtables:in-readtable with-package:syntax)
 
-#@(:ql-dist #:all-dists #:dist)
-#@(:uiop #:merge-pathnames*)
+#@(:ql-dist #:All-dists #:Dist)
+#@(:uiop #:Merge-pathnames*)
 
-(defun diff(&key (dists(all-dists))(if-exists :supersede))
+(defun diff(&key (dists(All-dists))(if-exists :supersede))
   (unless(listp dists) ; as canonicalize.
-    (setf dists (list(dist dists))))
-  (let((*default-pathname-defaults*(merge-pathnames* "ql-diffs/"(user-homedir-pathname))))
+    (setf dists (list(Dist dists))))
+  (let((*default-pathname-defaults*(Merge-pathnames* "ql-diffs/"(user-homedir-pathname))))
     (ensure-directories-exist *default-pathname-defaults*)
     (dolist(dist dists)
       (%diff dist if-exists))))
 
-#@(:uiop #:run-program)
+#@(:uiop #:Run-program)
 
 (defun %diff(dist if-exists)
   (dolist(system(target-systems dist))
@@ -25,7 +25,7 @@
 				      :direction :output
 				      :if-does-not-exist :create
 				      :if-exists if-exists)
-      (run-program (underlying-diff system)
+      (Run-program (underlying-diff system)
 		   :output t
 		   :ignore-error-status t))))
 
@@ -41,10 +41,10 @@
 			 2))))
 
 (defun diff-filename-of(system)
-  (let((main(bottom-directory-namestring(first system))))
+  (let((main(Bottom-directory-namestring(first system))))
     (subseq main
 	    0
-	    (mismatch main (bottom-directoty-namestring(second system))))))
+	    (mismatch main (Bottom-directory-namestring(second system))))))
 
 (defun underlying-diff(system)
   (format nil "diff -r ~{~A~^ ~}"system))
