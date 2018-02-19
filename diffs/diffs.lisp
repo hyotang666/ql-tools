@@ -31,15 +31,21 @@
       (terpri))))
 
 (defun target-systems(dist)
-  (let((ht(make-hash-table :test #'equal)))
-    ;; setup
-    (dolist(pathname(installed-systems dist))
-      (push pathname (gethash (coerce-name pathname)ht)))
-    ;; result
-    (loop :for systems :being :each :hash-value :of ht
-	  :when (<= 2 (list-length systems))
-	  :collect (last (sort systems #'< :key #'version<=pathname)
-			 2))))
+  (labels((SETUP(table)
+	    (dolist(pathname(Installed-systems dist))
+	      (push pathname (gethash (Coerce-name pathname)table)))
+	    (DO-RETURN table))
+	  (DO-RETURN(table)
+	    (loop :for systems :being :each :hash-value :of table
+		  :when (AT-LEAST-2-SYSTEMS-P systems)
+		  :collect(TARGETS systems)))
+	  (AT-LEAST-2-SYSTEMS-P(systems)
+	    (<= 2 (list-length systems)))
+	  (TARGETS(systems)
+	    (last (sort systems #'< :key #'Version<=pathname)
+		  2))
+	  )
+    (SETUP(make-hash-table :test #'equal))))
 
 (defun diff-filename-of(system)
   (let((main(Bottom-directory-namestring(first system))))
