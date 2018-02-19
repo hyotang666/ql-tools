@@ -12,16 +12,16 @@
 (in-package :ql-tools.utility)
 (named-readtables:in-readtable with-package:syntax)
 
-(define-simple-type(pathnames (:element-type pathname)
+(Define-simple-type(pathnames (:element-type pathname)
 			      (:element-predicate pathnamep)))
 (deftype system-designator ()
-  '(or keyword string))
+  '(OR KEYWORD STRING))
 
-(prototype installed-systems(ql-dist:dist)pathnames)
+(Prototype installed-systems(ql-dist:dist)pathnames)
 (defun installed-systems(dist)
   (uiop:subdirectories(repository dist)))
 
-(prototype repository(ql-dist:dist)pathname)
+(Prototype repository(ql-dist:dist)pathname)
 (defun repository(dist)
   (ql-dist:relative-to dist
     (make-pathname :directory (list :relative "software"))))
