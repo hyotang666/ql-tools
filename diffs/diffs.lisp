@@ -27,7 +27,8 @@
 				      :if-exists if-exists)
       (Run-program (underlying-diff system)
 		   :output t
-		   :ignore-error-status t))))
+		   :ignore-error-status t)
+      (terpri))))
 
 (defun target-systems(dist)
   (let((ht(make-hash-table :test #'equal)))
