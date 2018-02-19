@@ -19,6 +19,7 @@
 
 (Prototype installed-systems(ql-dist:dist)pathnames)
 (defun installed-systems(dist)
+  "Return \"dists/DIST/software/*\""
   (uiop:subdirectories(repository dist)))
 
 (Prototype repository(ql-dist:dist)pathname)
