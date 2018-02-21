@@ -1,8 +1,12 @@
+(defpackage :ql-tools.utility(:use :cl :type-ext :prompt-for)
   (:export
+    ;;;; dist
     #:installed-systems
+    ;;;; generics
     #:coerce-name
     #:system-name=
     #:system-source-files
+    ;;;; pathname
     #:version<=pathname
     #:bottom-directory-namestring
     ;;;; pathnames
@@ -10,12 +14,13 @@
     #:mismatch-pathnames
     ;;;; system
     #:any-version-of
-    ;; type
+    ;;;; type name
     #:pathnames
     #:system-designator
     ))
 (in-package :ql-tools.utility)
 (named-readtables:in-readtable with-package:syntax)
+(musam:enable)
 
 (Define-simple-type(pathnames (:element-type pathname)
 			      (:element-predicate pathnamep)))
@@ -25,12 +30,7 @@
 (Prototype installed-systems(ql-dist:dist)pathnames)
 (defun installed-systems(dist)
   "Return \"dists/DIST/software/*\""
-  (uiop:subdirectories(repository dist)))
-
-(Prototype repository(ql-dist:dist)pathname)
-(defun repository(dist)
-  (ql-dist:relative-to dist
-    (make-pathname :directory (list :relative "software"))))
+  (uiop:subdirectories(ql-dist:relative-to dist "software/")))
 
 (deftype pathname-designator()
   `(OR PATHNAME STRING))
