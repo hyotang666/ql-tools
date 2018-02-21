@@ -27,13 +27,17 @@
   (ql-dist:relative-to dist
     (make-pathname :directory (list :relative "software"))))
 
-(prototype version<=pathname(pathname)integer)
-(defun version<=pathname(pathname)
-  (parse-integer(retrieve-if #'digit-char-p
-			     (bottom-directory-namestring pathname))))
+(deftype pathname-designator()
+  `(OR PATHNAME STRING))
 
-(defun retrieve-if(predicate string)
-  (remove-if (complement predicate) string))
+(Prototype version<=pathname(pathname-designator)(or null integer))
+(defun version<=pathname(pathname)
+  (labels((RETRIEVE-IF(predicate string)
+	    (remove-if (complement predicate) string))
+	  )
+    (values ; to discard second value.
+      (parse-integer(RETRIEVE-IF #'digit-char-p
+				 (bottom-directory-namestring pathname))))))
 
 (prototype bottom-directory-namestring(pathname)string)
 (defun bottom-directory-namestring(pathname)
