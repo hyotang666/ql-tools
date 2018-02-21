@@ -39,7 +39,7 @@
       (parse-integer(RETRIEVE-IF #'digit-char-p
 				 (bottom-directory-namestring pathname))))))
 
-(prototype bottom-directory-namestring(pathname)string)
+(Prototype bottom-directory-namestring(pathname-designator)string)
 (defun bottom-directory-namestring(pathname)
   (car(last(pathname-directory pathname))))
 
