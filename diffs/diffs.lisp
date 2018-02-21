@@ -1,5 +1,10 @@
-(defpackage :ql-tools.diffs(:use :ql-tools.utility :cl)
-  (:import-from :nitch-util.type #:prototype)
+(defpackage :ql-tools.diffs(:use :cl)
+  (:import-from :ql-tools.utility
+		#:Installed-systems
+		#:Coerce-name
+		#:Bottom-directory-namestring
+		#:Version<=pathname
+		)
   (:export
     #:diff
     ))

@@ -1,4 +1,11 @@
-(defpackage :ql-tools.load-system(:use :cl :ql-tools.utility :prompt-for)
+(defpackage :ql-tools.load-system(:use :cl :prompt-for)
+  (:import-from :ql-tools.utility
+		#:System-source-files
+		#:System-name=
+		#:Any-version-of
+		#:Mismatch-pathnames
+		#:Prompt
+		)
   (:export
     #:load-system
     ))

@@ -1,4 +1,9 @@
-(defpackage :ql-tools.degenerate(:use :cl :ql-tools.utility)
+(defpackage :ql-tools.degenerate(:use :cl)
+  (:import-from :ql-tools.utility
+		#:Any-version-of
+		#:System-source-files
+		#:Bottom-directory-namestring
+		)
   (:export
     #:degenerate
     #:undo
