@@ -1,9 +1,13 @@
   (:export
     #:installed-systems
     #:coerce-name
+    #:system-name=
     #:system-source-files
     #:version<=pathname
     #:bottom-directory-namestring
+    ;;;; pathnames
+    #:prompt
+    #:mismatch-pathnames
     ;;;; system
     #:any-version-of
     ;; type
@@ -172,3 +176,58 @@
 (defun system-name=(thing1 thing2)
   (string=(coerce-name thing1)(coerce-name thing2)))
 
+(Prototype mismatch-pathnames(pathnames)pathnames)
+(macrolet((assertion(form)
+	    `(ASSERT ,form()
+		     'SIMPLE-ERROR
+		     :FORMAT-CONTROL "~S: argument PATHNAMES must have at least 2 elements, but ~S."
+		     :FORMAT-ARGUMENTS `(MISMATCH-PATHNAMES ,pathnames)))
+	  (!(tag form)
+	    `(HANDLER-CASE,form
+	       ,(ecase tag
+		  (0 `(ERROR()
+			(ERROR 'SIMPLE-TYPE-ERROR
+			       :FORMAT-CONTROL "~S: argument PATHNAMES must proper list, but ~S."
+			       :FORMAT-ARGUMENTS (LIST 'MISMATCH-PATHNAMES PATHNAMES))))
+		  (1 `(ERROR()
+			(LET((DATUM(FIND-IF-NOT #'PATHNAMEP PATHNAMES)))
+			  (ERROR 'SIMPLE-TYPE-ERROR
+				 :FORMAT-CONTROL "~S: argument PATHNAMES's every element must pathname, but ~S.~%Especially ~S."
+				 :FORMAT-ARGUMENTS (LIST 'MISMATCH-PATHNAMES PATHNAMES DATUM)
+				 :EXPECTED-TYPE 'PATHNAME
+				 :DATUM DATUM))))))))
+
+  (defun mismatch-pathnames(pathnames)
+    (assertion(<=  2 (! 0(list-length pathnames))))
+    (labels((REC(components)
+	      (if(SAME-DIRECTORY-P components)
+		(REC (map-into components #'cdr components))
+		(DO-RETURN components)))
+	    (SAME-DIRECTORY-P(components)
+	      (let((elt(caar components)))
+		(when elt
+		  (loop :for component :in (cdr components)
+			:always (equal elt (car component))))))
+	    (DO-RETURN(components)
+	      (map-into components
+			#`(make-pathname :directory(CANONICALIZE $component) 
+					 :name (pathname-name $pathname)
+					 :type (pathname-type $pathname))
+			components
+			pathnames))
+	    (CANONICALIZE(component)
+	      (if(symbolp (car component))
+		component
+		(cons :relative component)))
+	    )
+      (REC (mapcar #`(! 1 (progn (check-type $pathname pathname)
+				 (pathname-directory $pathname)))
+		     pathnames)))))
+
+(Prototype prompt(list &rest T)string)
+(defun prompt(choices &rest format-args)
+  (with-output-to-string(*standard-output*)
+    (loop :for n :upfrom 0
+	  :for choice :in choices
+	  :do (format t "~%~3D: ~A" n choice)
+	  :finally (apply #'format t format-args))))
