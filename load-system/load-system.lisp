@@ -9,11 +9,11 @@
 ;;;; develop utility
 (define-symbol-macro u (asdf:load-system :ql-tools.load-system))
 
-#@(:asdf #:*system-definition-search-functions*)
+#@(:asdf #:*System-definition-search-functions*)
 
 (defun load-system(system)
-  (let((*system-definition-search-functions*(cons (make-searcher)
-						  *system-definition-search-functions*)))
+  (let((*System-definition-search-functions*(cons (make-searcher)
+						  *System-definition-search-functions*)))
     (asdf:load-system system)))
 
 (defun make-searcher()
