@@ -1,6 +1,7 @@
 (defpackage :ql-tools.degenerate(:use :cl :ql-tools.utility)
   (:export
     #:degenerate
+    #:undo
     ))
 (in-package :ql-tools.degenerate)
 (named-readtables:in-readtable with-package:syntax)
@@ -147,3 +148,23 @@
       (namestring(make-pathname :directory(under-dists-components directory) 
 				:name (pathname-name pathname)
 				:type (pathname-type pathname))))))
+
+(defun undo(system)
+  (labels(
+	  (PROBE?(release)
+	    (when(probe-file release)
+	      (UNDO-ATOMIC release (pathname(uiop:read-file-line release)))))
+	  (UNDO-ATOMIC(release directory)
+	    (MAIN release)
+	    (dolist(asd(System-source-files directory))
+	      (MAIN (degenerated-pathname(pathname-name asd)"systems"))))
+	  (MAIN(pathname)
+	    (let((lines(uiop:read-file-lines pathname)))
+	      (cond
+		((cdr lines) ; have some.
+		 (output (format nil "~{~A~%~}"(butlast lines))
+			 pathname))
+		((car lines) ; hove one.
+		 (delete-file pathname)))))
+	  )
+    (PROBE?(degenerated-pathname system "releases"))))

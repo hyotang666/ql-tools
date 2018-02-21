@@ -1,7 +1,7 @@
-(defpackage :ql-tools.utility(:use :cl :nitch-util.type)
   (:export
     #:installed-systems
     #:coerce-name
+    #:system-source-files
     #:version<=pathname
     #:bottom-directory-namestring
     ;;;; system
