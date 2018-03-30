@@ -2,6 +2,8 @@
   (:export #:installed))
 (in-package :ql-tools.installed)
 
+(defvar *alt-descriptions* (make-hash-table :test #'equal))
+
 (defun installed()
   (map nil #'funcall (printers (installed-releases(dist "quicklisp")))))
 
@@ -24,8 +26,6 @@
 
 ;;; Some systems does not have its own asdf::description.
 ;;; Here, we retreave dessctions from its README or elsewhere.
-
-(defvar *alt-descriptions* (make-hash-table :test #'equal))
 
 (defmacro def (key description)
   `(setf(gethash ,key *alt-descriptions*)
