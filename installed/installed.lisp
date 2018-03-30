@@ -58,3 +58,9 @@
 (def "femlisp" "Finite Element Method framework")
 (def "kmrcl" "Collection of utility functions")
 (def "js" "Compiler (translator) aimed to enable scripting software written in CL with JS.")
+(def "cl-html-diff" "Generating human readable diffs of HTML documents, using HTML.")
+(def "rfc2109" "Includes in whole RFC2109, and in part RFC2608 and the Netscape cookie spec")
+(def "rfc2388" "Internet Media Type, multipart/form-data.")
+(def "rfc2388-binary" "Parsing multipart/form-data data streams.")
+(def "rucksack" "Fairly transparent persistence mechanism for conses, vectors and CLOS objects.")
+
