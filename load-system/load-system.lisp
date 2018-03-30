@@ -23,7 +23,7 @@
 						  *System-definition-search-functions*)))
     (asdf:load-system system)))
 
-#@(:asdf #:System-source-file #:System-registered-p)
+#@(:asdf #:System-source-file #:Registered-system)
 
 ;;;; We treat sub system as monolithic.
 ;;;; E.g. mcclim has many sub system as module.(mcclim-core, clim, etc...)
@@ -33,9 +33,9 @@
       (labels((LOG-IT(arg)
 		(print arg)
 		(force-output))
-	      (ALREADY-REGISTERED-ONE(registered-p)
-		(when registered-p
-		  (System-source-file(cdr registered-p))))
+	      (ALREADY-REGISTERED-ONE(system)
+		(when system
+		  (System-source-file system)))
 	      (DO-SEARCH(systems)
 		(let((length(list-length systems)))
 		  (when systems
@@ -58,6 +58,6 @@
 	;; one .asd file may define some systems.
 	;; in such case, we should treat it as atomic.
 	(LOG-IT system)
-	(or (ALREADY-REGISTERED-ONE(System-registered-p system))
+	(or (ALREADY-REGISTERED-ONE(Registered-system system))
 	    (gethash(string-downcase system)monolith)
 	    (DO-SEARCH(Any-version-of system)))))))
