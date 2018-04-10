@@ -63,4 +63,10 @@
 (def "rfc2388" "Internet Media Type, multipart/form-data.")
 (def "rfc2388-binary" "Parsing multipart/form-data data streams.")
 (def "rucksack" "Fairly transparent persistence mechanism for conses, vectors and CLOS objects.")
-
+(def "atdoc" "generates documentation for Common Lisp packages")
+(def "conspack" "Inspired by MessagePack, and by the general lack of features among prominent serial/wire formats.")
+(def "cl-gss" "Interface to GSSAPI which provides a standard API to authentication services")
+(def "frpc" "EXtensible Data Representation (XDR) serializer and a flexible Remote Procedure Call (RPC) framework")
+(def "generic-comparability" "Interface for the EQUALS function")
+(def "lfarm" "Distributing work across machines using the lparallel API.")
+(def "xmls" "Small, Simple, non-validating xml parser.")
