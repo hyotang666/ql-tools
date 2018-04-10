@@ -24,6 +24,6 @@
 (defun install-required-systems(system)
   (dolist(required (required-systems system))
     (let((s(system required)))
-      (when(and s (not(installedp s)))
+      (when(and s (not(asdf:find-system (name s) nil)))
 	(format t "~&~A require ~A.~%"(name system)required)
 	(ql:quickload required)))))
