@@ -4,24 +4,32 @@
 
 (defvar *alt-descriptions* (make-hash-table :test #'equal))
 
-(defun installed()
-  (map nil #'funcall (printers (installed-releases(dist "quicklisp")))))
+(defun installed(&optional test)
+  (map nil #'funcall (printers (installed-releases(dist "quicklisp"))
+			       test)))
 
-(defun printers(releases)
+(defun printers(releases test)
   (mapcar (lambda(release)
 	    (let*((*standard-output*(make-broadcast-stream))
 		  (*error-output*(make-broadcast-stream))
 		  (name(name release))
-		  (system(asdf:find-system name nil)))
+		  (system(asdf:find-system name nil))
+		  (description(if(not system)
+				"Not found"
+				;; To override useless description, GETHASH first.
+				(or (gethash name *alt-descriptions*)
+				    (asdf::component-description system)
+				    "No description"))))
+	      ;; To discard uninteresting output, delay interesting output.
 	      (lambda()
-		(format t "~&~A - ~A"
-			name
-			(if(not system)
-			  "Not found"
-			  ;; To override useless description, GETHASH first.
-			  (or (gethash name *alt-descriptions*)
-			      (asdf::component-description system)
-			      "No description"))))))
+		(when(or (and test
+			      (etypecase test
+				((or symbol function)
+				 (funcall test description))
+				(string
+				  (search test description :test #'char-equal))))
+			 (null test))
+		  (format t "~&~A - ~A" name description)))))
 	  releases))
 
 ;;; Some systems does not have its own asdf::description.
