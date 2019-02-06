@@ -1,36 +1,42 @@
-(defpackage :ql-tools.installed(:use :cl :ql-dist)
+(defpackage :ql-tools.installed(:use :cl)
   (:export #:installed))
 (in-package :ql-tools.installed)
 
 (defvar *alt-descriptions* (make-hash-table :test #'equal))
 
-(defun installed(&optional test)
-  (map nil #'funcall (printers (installed-releases(dist "quicklisp"))
-			       test)))
+(defun installed(&optional regex)
+  (loop :for (name author description) :in (informations)
+	:when (or (and regex
+		       (ppcre:scan regex description))
+		  (null regex))
+	:do (format t "~&~%~:@(~A~)~@[ by ~A~]~%~A" name author description)))
 
-(defun printers(releases test)
-  (mapcar (lambda(release)
-	    (let*((*standard-output*(make-broadcast-stream))
-		  (*error-output*(make-broadcast-stream))
-		  (name(name release))
-		  (system(asdf:find-system name nil))
-		  (description(if(not system)
-				"Not found"
-				;; To override useless description, GETHASH first.
-				(or (gethash name *alt-descriptions*)
-				    (asdf::component-description system)
-				    "No description"))))
-	      ;; To discard uninteresting output, delay interesting output.
-	      (lambda()
-		(when(or (and test
-			      (etypecase test
-				((or symbol function)
-				 (funcall test description))
-				(string
-				  (search test description :test #'char-equal))))
-			 (null test))
-		  (format t "~&~A - ~A" name description)))))
-	  releases))
+(defun informations()
+  (loop :for release :in (all-releases)
+	:collect (information release)))
+
+(defun all-releases()
+  (loop :for dist :in (ql-dist:all-dists)
+	:append (ql-dist:installed-releases dist)))
+
+(defun information(release)
+  (let((system(system release)))
+    (if system
+      (list (asdf:coerce-name system)
+	    (asdf:system-author system)
+	    (or (asdf:system-description system)
+		"No description"))
+      (list (ql-dist:name release)
+	    nil
+	    ";; WARNING: Could not detect correct system."))))
+
+(defun system (release)
+  (or (asdf:find-system(ql-dist:name release)nil)
+      (let((system-files(ql-dist:system-files release)))
+	(when(and system-files
+		  (null(cdr system-files)))
+	  (asdf:find-system (uiop:split-name-type(car system-files))
+			    nil)))))
 
 ;;; Some systems does not have its own asdf::description.
 ;;; Here, we retreave dessctions from its README or elsewhere.
