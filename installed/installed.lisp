@@ -45,6 +45,7 @@
   `(setf(gethash ,key *alt-descriptions*)
      ,description))
 
+#|
 (def "access" "Unifying data-strucure accessing")
 (def "also-alsa" "Basic ALSA bindings. PCM stream.")
 (def "cerberus" "Kerberos v5 auehntication protocol implementation")
@@ -84,3 +85,4 @@
 (def "generic-comparability" "Interface for the EQUALS function")
 (def "lfarm" "Distributing work across machines using the lparallel API.")
 (def "xmls" "Small, Simple, non-validating xml parser.")
+|#
