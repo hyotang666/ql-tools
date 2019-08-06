@@ -1,4 +1,4 @@
-(defpackage :ql-tools.utility(:use :cl :type-ext :prompt-for)
+(defpackage :ql-tools.utility(:use :cl :prompt-for)
   (:export
     ;;;; dist
     #:installed-systems
@@ -20,12 +20,16 @@
     ))
 (in-package :ql-tools.utility)
 
-(Define-simple-type(pathnames (:element-type pathname)
-			      (:element-predicate pathnamep)))
+(deftype pathnames()
+  "List of pathnames"
+  'list)
+
 (deftype system-designator ()
   '(OR KEYWORD STRING))
 
-(Prototype installed-systems(ql-dist:dist)pathnames)
+(declaim(ftype (function (ql-dist:dist) pathnames)
+	       installed-systems))
+
 (defun installed-systems(dist)
   "Return \"dists/DIST/software/*\""
   (uiop:subdirectories(ql-dist:relative-to dist "software/")))
@@ -33,7 +37,9 @@
 (deftype pathname-designator()
   `(OR PATHNAME STRING))
 
-(Prototype version<=pathname(pathname-designator)(or null integer))
+(declaim (ftype (function (pathname-designator) (or null integer))
+		version<=pathname))
+
 (defun version<=pathname(pathname)
   (labels((RETRIEVE-IF(predicate string)
 	    (remove-if (complement predicate) string))
@@ -42,11 +48,15 @@
       (parse-integer(RETRIEVE-IF #'digit-char-p
 				 (bottom-directory-namestring pathname))))))
 
-(Prototype bottom-directory-namestring(pathname-designator)string)
+(declaim (ftype (function (pathname-designator) string)
+		bottom-directory-namestring))
+
 (defun bottom-directory-namestring(pathname)
   (car(last(pathname-directory pathname))))
 
-(prototype coerce-name(t)string)
+(declaim (ftype (function (*) string)
+		coerce-name))
+
 (let((cache(make-hash-table :test #'equal)))
   (defun coerce-name(thing)
     (labels(
@@ -66,7 +76,9 @@
 	(QL-DIST:SYSTEM (ql-dist:name thing))
 	(PATHNAME (DO-PATHNAME thing))))))
 
-(Prototype system-source-file(T)pathname)
+(declaim (ftype (function (*) pathname)
+		system-source-file))
+
 (let((cache(make-hash-table :test #'equal)))
   (defun system-source-file(thing)
     (labels(
@@ -114,11 +126,15 @@
       (QL-DIST:SYSTEM (system-source-file(ql-dist:name thing)))
       (PATHNAME (DO-PATHNAME thing))))))
 
-(Prototype asd-p(pathname)boolean)
+(declaim (ftype (function (pathname) boolean)
+		asd-p))
+
 (defun asd-p(pathname)
   (string= "asd" (pathname-type pathname)))
 
-(Prototype any-version-of(system-designator)pathnames)
+(declaim (ftype (function (system-designator) pathnames)
+		any-version-of))
+
 (let((cache(make-hash-table :test #'equal)))
   (defun any-version-of(system)
     (setf system (the string (string-downcase system))) ; as canonicalize.
@@ -154,7 +170,9 @@
       (or (uiop:ensure-list(ql:local-projects-searcher system))
 	  (DIVERGE(ql-dist:find-system system))))))
 
-(Prototype system-source-files(T)pathnames)
+(declaim (ftype (function (*) pathnames)
+		system-source-files))
+
 (defun system-source-files(thing)
   (etypecase thing
     (QL-DIST:SYSTEM
@@ -169,11 +187,15 @@
 	    (dolist(file(uiop:directory-files directory "*.asd"))
 	      (asd file))))))))
 
-(Prototype system-name=(T T)boolean)
+(declaim (ftype (function (* *) boolean)
+		system-name=))
+
 (defun system-name=(thing1 thing2)
   (string=(coerce-name thing1)(coerce-name thing2)))
 
-(Prototype mismatch-pathnames(pathnames)pathnames)
+(declaim (ftype (function (pathnames)pathnames)
+		mismatch-pathnames))
+
 (macrolet((assertion(form)
 	    `(ASSERT ,form()
 		     'SIMPLE-ERROR
@@ -223,7 +245,9 @@
 		       (pathname-directory $pathname))
 		   pathnames)))))
 
-(Prototype prompt(list &rest T)string)
+(declaim (ftype (function (list &rest T) string)
+		prompt))
+
 (defun prompt(choices &rest format-args)
   (with-output-to-string(*standard-output*)
     (loop :for n :upfrom 0
