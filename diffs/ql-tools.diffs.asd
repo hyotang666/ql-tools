@@ -4,6 +4,5 @@
   :depends-on
   (
    "ql-tools.utility"
-   "with-package"       ; using package temporarily.
    )
   :components((:file "diffs")))

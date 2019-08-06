@@ -9,20 +9,14 @@
     #:diff
     ))
 (in-package :ql-tools.diffs)
-(named-readtables:in-readtable with-package:syntax)
 
-#@(:ql-dist #:All-dists #:Dist)
-#@(:uiop #:Merge-pathnames*)
-
-(defun diff(&key (dists(All-dists))(if-exists :supersede))
+(defun diff(&key (dists(ql-dist:all-dists))(if-exists :supersede))
   (unless(listp dists) ; as canonicalize.
-    (setf dists (list(Dist dists))))
-  (let((*default-pathname-defaults*(Merge-pathnames* "ql-diffs/"(user-homedir-pathname))))
+    (setf dists (list(ql-dist:dist dists))))
+  (let((*default-pathname-defaults*(uiop:merge-pathnames* "ql-diffs/"(user-homedir-pathname))))
     (ensure-directories-exist *default-pathname-defaults*)
     (dolist(dist dists)
       (%diff dist if-exists))))
-
-#@(:uiop #:Run-program)
 
 (defun %diff(dist if-exists)
   (dolist(system(target-systems dist))
@@ -30,9 +24,9 @@
 				      :direction :output
 				      :if-does-not-exist :create
 				      :if-exists if-exists)
-      (Run-program (underlying-diff system)
-		   :output t
-		   :ignore-error-status t)
+      (uiop:run-program (underlying-diff system)
+			:output t
+			:ignore-error-status t)
       (terpri))))
 
 (defun target-systems(dist)
