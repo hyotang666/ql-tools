@@ -11,7 +11,6 @@
     ))
 (in-package :ql-tools.load-system)
 (named-readtables:in-readtable with-package:syntax)
-(musam:enable)
 
 ;;;; develop utility
 (define-symbol-macro u (asdf:load-system :ql-tools.load-system))
