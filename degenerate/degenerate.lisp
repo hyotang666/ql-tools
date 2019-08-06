@@ -9,7 +9,6 @@
     #:undo
     ))
 (in-package :ql-tools.degenerate)
-(named-readtables:in-readtable with-package:syntax)
 
 (defvar *degenerated-directory* (uiop:merge-pathnames* "degenerated/"
 						       (asdf:system-source-directory :ql-tools.degenerate)))
@@ -59,8 +58,6 @@
 	  )
     (unless(uiop:featurep :qlt-degenerate)
       (DIVERGE))))
-
-#@(:ql-dist #:Find-system)
 
 (defun degenerate(system)
   (setup)
@@ -131,12 +128,10 @@
 		   subdir
 		   (string-downcase system))))
 
-#@(:ql-dist #:Base-directory #:Dist)
-
 (defun degenerated-definition-searcher(system)
   (labels((DEGENERATED-DEFINITION-PATHNAME(pathname)
 	    (uiop:merge-pathnames* (car(last(uiop:read-file-lines pathname)))
-				   (Base-directory(Dist :quicklisp))))
+				   (ql-dist:base-directory(ql-dist:dist :quicklisp))))
 	  )
     (let((pathname(degenerated-pathname system "systems")))
       (when(probe-file pathname)
