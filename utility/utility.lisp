@@ -19,7 +19,6 @@
     #:system-designator
     ))
 (in-package :ql-tools.utility)
-(named-readtables:in-readtable with-package:syntax)
 
 (Define-simple-type(pathnames (:element-type pathname)
 			      (:element-predicate pathnamep)))
@@ -120,7 +119,6 @@
   (string= "asd" (pathname-type pathname)))
 
 (Prototype any-version-of(system-designator)pathnames)
-#@(:ql-dist #:Find-system #:Dist)
 (let((cache(make-hash-table :test #'equal)))
   (defun any-version-of(system)
     (setf system (the string (string-downcase system))) ; as canonicalize.
@@ -132,7 +130,7 @@
 		    (complement #'<)
 		    :key #'version<=pathname))
 	    (DO-MAIN(system)
-	      (loop :for pathname :in (installed-systems(Dist system))
+	      (loop :for pathname :in (installed-systems(ql-dist:dist system))
 		    :when(system-name= system pathname)
 		    :collect pathname))
 	    (FALLBACK()
@@ -141,7 +139,7 @@
 	    (SEARCH-SYSTEM()
 	      (WARN-TO-USER)
 	      (uiop:while-collecting(ACC)
-		(dolist(root(installed-systems(Dist :quicklisp)))
+		(dolist(root(installed-systems(ql-dist:dist :quicklisp)))
 		  (dolist(asd(system-source-files root))
 		    (CACHE-IT asd)
 		    (when(system-name= system asd)
@@ -154,7 +152,7 @@
 		       :test #'equal))
 	    )
       (or (uiop:ensure-list(ql:local-projects-searcher system))
-	  (DIVERGE(Find-system system))))))
+	  (DIVERGE(ql-dist:find-system system))))))
 
 (Prototype system-source-files(T)pathnames)
 (defun system-source-files(thing)
