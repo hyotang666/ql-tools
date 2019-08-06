@@ -20,7 +20,6 @@
     ))
 (in-package :ql-tools.utility)
 (named-readtables:in-readtable with-package:syntax)
-(musam:enable)
 
 (Define-simple-type(pathnames (:element-type pathname)
 			      (:element-predicate pathnamep)))
@@ -210,9 +209,10 @@
 			:always (equal elt (car component))))))
 	    (DO-RETURN(components)
 	      (map-into components
-			#`(make-pathname :directory(CANONICALIZE $component) 
+			(lambda($component $pathname)
+			  (make-pathname :directory(CANONICALIZE $component)
 					 :name (pathname-name $pathname)
-					 :type (pathname-type $pathname))
+					 :type (pathname-type $pathname)))
 			components
 			pathnames))
 	    (CANONICALIZE(component)
@@ -220,9 +220,10 @@
 		component
 		(cons :relative component)))
 	    )
-      (REC (mapcar #`(! 1 (progn (check-type $pathname pathname)
-				 (pathname-directory $pathname)))
-		     pathnames)))))
+      (REC (mapcar (lambda($pathname)
+		       (! 1 (check-type $pathname pathname))
+		       (pathname-directory $pathname))
+		   pathnames)))))
 
 (Prototype prompt(list &rest T)string)
 (defun prompt(choices &rest format-args)
