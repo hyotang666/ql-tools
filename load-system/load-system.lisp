@@ -10,19 +10,15 @@
     #:load-system
     ))
 (in-package :ql-tools.load-system)
-(named-readtables:in-readtable with-package:syntax)
 
 ;;;; develop utility
 (define-symbol-macro u (asdf:load-system :ql-tools.load-system))
 
-#@(:asdf #:*System-definition-search-functions*)
 
 (defun load-system(system)
-  (let((*System-definition-search-functions*(cons (make-searcher)
-						  *System-definition-search-functions*)))
+  (let((asdf:*system-definition-search-functions*(cons (make-searcher)
+						  asdf:*system-definition-search-functions*)))
     (asdf:load-system system)))
-
-#@(:asdf #:System-source-file #:Registered-system)
 
 ;;;; We treat sub system as monolithic.
 ;;;; E.g. mcclim has many sub system as module.(mcclim-core, clim, etc...)
@@ -34,7 +30,7 @@
 		(force-output))
 	      (ALREADY-REGISTERED-ONE(system)
 		(when system
-		  (System-source-file system)))
+		  (asdf:system-source-file system)))
 	      (DO-SEARCH(systems)
 		(let((length(list-length systems)))
 		  (when systems
@@ -57,6 +53,6 @@
 	;; one .asd file may define some systems.
 	;; in such case, we should treat it as atomic.
 	(LOG-IT system)
-	(or (ALREADY-REGISTERED-ONE(Registered-system system))
+	(or (ALREADY-REGISTERED-ONE(asdf:registered-system system))
 	    (gethash(string-downcase system)monolith)
 	    (DO-SEARCH(Any-version-of system)))))))
