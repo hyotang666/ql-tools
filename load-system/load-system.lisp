@@ -1,4 +1,4 @@
-(defpackage :ql-tools.load-system(:use :cl :prompt-for)
+(defpackage :ql-tools.load-system(:use :cl)
   (:import-from :ql-tools.utility
 		#:System-source-files
 		#:System-name=
@@ -46,8 +46,10 @@
 		      :do (setf(gethash(pathname-name asd)monolith)asd)
 		      :finally (return (car result))))
 	      (ASK-USER(type systems)
-		(nth (Prompt-for type (Prompt (Mismatch-pathnames systems)
-					      "~&Which version do you load?~%Type number >> "))
+		(nth (prompt-for:prompt-for
+		       type
+		       (Prompt (Mismatch-pathnames systems)
+			       "~&Which version do you load?~%Type number >> "))
 		     systems))
 	      )
 	;; one .asd file may define some systems.
