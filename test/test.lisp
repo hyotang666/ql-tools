@@ -29,7 +29,8 @@
 		   (format t "~&~S on ~S test finished."
 			   (ql-dist:name release)
 			   (ql-dist:name(ql-dist:dist release)))
-		   (force-output)(read-line))
+		   (force-output)
+		   (ql-util:press-enter-to-continue))
 	(giveup()
 	  :report
 	  (lambda(s)(format s "Give up to test ~S"(ql-dist:name release))))))
