@@ -32,7 +32,8 @@
 
 (defun system (release)
   (or (asdf:find-system(ql-dist:name release)nil)
-      (let((system-files(ql-dist:system-files release)))
+      (let((system-files(remove "test" (ql-dist:system-files release)
+				:test #'search)))
 	(when(and system-files
 		  (null(cdr system-files)))
 	  (asdf:find-system (uiop:split-name-type(car system-files))
