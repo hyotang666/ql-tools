@@ -23,8 +23,8 @@
   (let((system(system release)))
     (if system
       (list (asdf:coerce-name system)
-	    (asdf:system-author system)
-	    (or (asdf:system-description system)
+	    (ignore-errors(asdf:system-author system))
+	    (or (ignore-errors(asdf:system-description system))
 		"No description"))
       (list (ql-dist:name release)
 	    nil
