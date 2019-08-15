@@ -1,7 +1,7 @@
 ; vim: ft=lisp
 (in-package :asdf)
 (defsystem #:ql-tools.installed
-  :version "0.1.0"
+  :version "0.2.0"
   :depends-on
   (
    "ql-tools.utility"

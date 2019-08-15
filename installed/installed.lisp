@@ -26,6 +26,10 @@
 	    nil
 	    ";; WARNING: Could not detect correct system."))))
 
+(declaim (ftype (function (ql-dist:release) (values (or null asdf:system)
+						    &optional))
+		system))
+
 (defun system (release)
   (or (asdf:find-system(ql-dist:name release)nil)
       (let((system-files(remove "test" (ql-dist:system-files release)
