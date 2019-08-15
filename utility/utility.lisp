@@ -2,6 +2,8 @@
   (:export
     ;;;; dist
     #:installed-systems
+    ;;;; releases
+    #:all-releases
     ;;;; generics
     #:coerce-name
     #:system-name=
@@ -254,3 +256,9 @@
 	  :for choice :in choices
 	  :do (format t "~%~3D: ~A" n choice)
 	  :finally (apply #'format t format-args))))
+
+(declaim (ftype (function () list) all-releases))
+
+(defun all-releases()
+  (loop :for dist :in (ql-dist:all-dists)
+	:append (ql-dist:installed-releases dist)))
