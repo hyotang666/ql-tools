@@ -12,12 +12,8 @@
 	:do (format t "~&~%~:@(~A~)~@[ by ~A~]~%~A" name author description)))
 
 (defun informations()
-  (loop :for release :in (all-releases)
+  (loop :for release :in (ql-tools.utility:all-releases)
 	:collect (information release)))
-
-(defun all-releases()
-  (loop :for dist :in (ql-dist:all-dists)
-	:append (ql-dist:installed-releases dist)))
 
 (defun information(release)
   (let((system(system release)))
