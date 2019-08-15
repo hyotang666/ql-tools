@@ -17,11 +17,8 @@
 			      (restarter 'asdf:clear-configuration-and-retry)))
 		(ql:quickload(asdf/find-component:missing-requires c)))
 	      (funcall jumper)))
-	  (installed-releases()
-	    (loop :for dist :in (ql-dist:all-dists)
-		  :append (ql-dist:installed-releases dist)))
 	  )
-  (dolist(release (installed-releases))
+  (dolist(release (ql-tools.utility:all-releases))
     :try
     (restart-case(handler-bind((asdf:missing-dependency
 				 (require-loader(lambda()(go :try)))))
