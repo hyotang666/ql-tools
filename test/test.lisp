@@ -22,10 +22,13 @@
     :try
     (restart-case(handler-bind((asdf:missing-dependency
 				 (require-loader(lambda()(go :try)))))
-		   (asdf:test-system(ql-dist:name release))
-		   (format t "~&~S on ~S test finished."
-			   (ql-dist:name release)
-			   (ql-dist:name(ql-dist:dist release)))
+		   (let((target(or (find "test" (ql-dist:system-files release)
+					 :test #'search)
+				   (ql-dist:name release))))
+		     (asdf:test-system (uiop:split-name-type target))
+		     (format t "~&~S on ~S test finished."
+			     target
+			     (ql-dist:name(ql-dist:dist release))))
 		   (force-output)
 		   (ql-util:press-enter-to-continue))
 	(giveup()
