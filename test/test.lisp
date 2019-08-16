@@ -18,20 +18,21 @@
 		(ql:quickload(asdf/find-component:missing-requires c)))
 	      (funcall jumper)))
 	  )
-  (dolist(release (ql-tools.utility:all-releases))
-    :try
-    (restart-case(handler-bind((asdf:missing-dependency
-				 (require-loader(lambda()(go :try)))))
-		   (let((target(or (find "test" (ql-dist:system-files release)
-					 :test #'search)
-				   (ql-dist:name release))))
-		     (asdf:test-system (uiop:split-name-type target))
-		     (format t "~&~S on ~S test finished."
-			     target
-			     (ql-dist:name(ql-dist:dist release))))
-		   (force-output)
-		   (ql-util:press-enter-to-continue))
-	(giveup()
-	  :report
-	  (lambda(s)(format s "Give up to test ~S"(ql-dist:name release))))))
-    ))
+    (let(giveups)
+      (dolist(release (ql-tools.utility:all-releases)giveups)
+	:try
+	(restart-case(handler-bind((asdf:missing-dependency
+				     (require-loader(lambda()(go :try)))))
+		       (let((target(or (find "test" (ql-dist:system-files release)
+					     :test #'search)
+				       (ql-dist:name release))))
+			 (asdf:test-system (uiop:split-name-type target))
+			 (format t "~&~S on ~S test finished."
+				 target
+				 (ql-dist:name(ql-dist:dist release))))
+		       (force-output)
+		       (ql-util:press-enter-to-continue))
+	  (giveup()
+	    :report
+	    (lambda(s)(format s "Give up to test ~S"(ql-dist:name release)))
+	    (push release giveups)))))))
