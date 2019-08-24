@@ -15,6 +15,12 @@
   (loop :for release :in (ql-tools.utility:all-releases)
 	:collect (information release)))
 
+(declaim (ftype (function (ql-dist:release)
+			  (values (cons string
+					(cons (or null cons string)
+					      (cons string null)))
+				  &optional))
+		information))
 (defun information(release)
   (let((system(system release)))
     (if system
