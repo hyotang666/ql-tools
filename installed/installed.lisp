@@ -9,7 +9,9 @@
 	:when (or (and regex
 		       (ppcre:scan regex description))
 		  (null regex))
-	:do (format t "~&~%~:@(~A~)~@[ by ~A~]~%~A" name author description)))
+	:do (format t "~&~%~A~@[ by ~A~]~%~A"
+		    (cl-ansi-text:green (string-upcase name))
+		    author description)))
 
 (defun informations()
   (loop :for release :in (ql-tools.utility:all-releases)
