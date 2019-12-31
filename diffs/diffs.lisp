@@ -32,7 +32,14 @@
 (defun target-systems(dist)
   (labels((SETUP(table)
 	    (dolist(pathname(Installed-systems dist))
-	      (push pathname (gethash (Coerce-name pathname)table)))
+              (restart-case(push pathname (gethash (Coerce-name pathname)table))
+                (skip()
+                  :report (lambda(stream)
+                            (format stream "Skip to get diff of ~S"
+                                    (Bottom-directory-namestring pathname)))
+                  :test (lambda(condition)
+                          (typep condition 'ql-tools.utility:not-resolve))
+                  #|Do nothing|#)))
 	    (DO-RETURN table))
 	  (DO-RETURN(table)
 	    (loop :for systems :being :each :hash-value :of table
