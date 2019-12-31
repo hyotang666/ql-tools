@@ -124,7 +124,7 @@
 		      `(,(Prompt-for `(MOD ,(list-length asds))
 				     (Prompt (mismatch-pathnames asds)
 					     "~%Type number.>> ")))))
-		(restart-case(error "Can not resolve asd file for ~S"thing)
+		(restart-case(not-resolve thing)
 		  (select(number)
 		    :report "Select target asd file."
 		    :interactive READER
