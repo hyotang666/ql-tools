@@ -87,6 +87,9 @@
              (format stream "Can not resolve asd file for ~S."
                      (cell-error-name condition)))))
 
+(defun not-resolve(name)
+  (error 'not-resolve :name name))
+
 (let((cache(make-hash-table :test #'equal)))
   (defun system-source-file(thing)
     (labels(
