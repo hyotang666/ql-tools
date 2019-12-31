@@ -19,6 +19,8 @@
     ;;;; type name
     #:pathnames
     #:system-designator
+    ;;;; condition name/function
+    #:not-resolve
     ))
 (in-package :ql-tools.utility)
 
