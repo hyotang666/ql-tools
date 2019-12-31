@@ -31,7 +31,8 @@
 (deftype system-designator ()
   '(OR KEYWORD STRING))
 
-(declaim(ftype (function (ql-dist:dist) pathnames)
+(declaim(ftype (function (ql-dist:dist)
+                         (values pathnames &optional))
 	       installed-systems))
 
 (defun installed-systems(dist)
@@ -41,7 +42,8 @@
 (deftype pathname-designator()
   `(OR PATHNAME STRING))
 
-(declaim (ftype (function (pathname-designator) (or null integer))
+(declaim (ftype (function (pathname-designator)
+                          (values (or null integer) &optional))
 		version<=pathname))
 
 (defun version<=pathname(pathname)
@@ -52,13 +54,15 @@
       (parse-integer(RETRIEVE-IF #'digit-char-p
 				 (bottom-directory-namestring pathname))))))
 
-(declaim (ftype (function (pathname-designator) string)
+(declaim (ftype (function (pathname-designator)
+                          (values string &optional))
 		bottom-directory-namestring))
 
 (defun bottom-directory-namestring(pathname)
   (car(last(pathname-directory pathname))))
 
-(declaim (ftype (function (*) string)
+(declaim (ftype (function (*)
+                          (values string &optional))
 		coerce-name))
 
 (let((cache(make-hash-table :test #'equal)))
@@ -80,7 +84,8 @@
 	(QL-DIST:SYSTEM (ql-dist:name thing))
 	(PATHNAME (DO-PATHNAME thing))))))
 
-(declaim (ftype (function (*) pathname)
+(declaim (ftype (function (*)
+                          (values pathname &optional))
 		system-source-file))
 
 (define-condition not-resolve(cell-error)
@@ -139,13 +144,15 @@
       (QL-DIST:SYSTEM (system-source-file(ql-dist:name thing)))
       (PATHNAME (DO-PATHNAME thing))))))
 
-(declaim (ftype (function (pathname) boolean)
+(declaim (ftype (function (pathname)
+                          (values boolean &optional))
 		asd-p))
 
 (defun asd-p(pathname)
   (string= "asd" (pathname-type pathname)))
 
-(declaim (ftype (function (system-designator) pathnames)
+(declaim (ftype (function (system-designator)
+                          (values pathnames &optional))
 		any-version-of))
 
 (let((cache(make-hash-table :test #'equal)))
@@ -183,7 +190,8 @@
       (or (uiop:ensure-list(ql:local-projects-searcher system))
 	  (DIVERGE(ql-dist:find-system system))))))
 
-(declaim (ftype (function (*) pathnames)
+(declaim (ftype (function (*)
+                          (values pathnames &optional))
 		system-source-files))
 
 (defun system-source-files(thing)
@@ -200,13 +208,15 @@
 	    (dolist(file(uiop:directory-files directory "*.asd"))
 	      (asd file))))))))
 
-(declaim (ftype (function (* *) boolean)
+(declaim (ftype (function (* *)
+                          (values boolean &optional))
 		system-name=))
 
 (defun system-name=(thing1 thing2)
   (string=(coerce-name thing1)(coerce-name thing2)))
 
-(declaim (ftype (function (pathnames)pathnames)
+(declaim (ftype (function (pathnames)
+                          (values pathnames &optional))
 		mismatch-pathnames))
 
 (macrolet((assertion(form)
@@ -258,7 +268,8 @@
 		       (pathname-directory $pathname))
 		   pathnames)))))
 
-(declaim (ftype (function (list &rest T) string)
+(declaim (ftype (function (list &rest T)
+                          (values string &optional))
 		prompt))
 
 (defun prompt(choices &rest format-args)
@@ -268,7 +279,9 @@
 	  :do (format t "~%~3D: ~A" n choice)
 	  :finally (apply #'format t format-args))))
 
-(declaim (ftype (function () list) all-releases))
+(declaim (ftype (function ()
+                          (values list &optional))
+                all-releases))
 
 (defun all-releases()
   (loop :for dist :in (ql-dist:all-dists)
