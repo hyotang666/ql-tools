@@ -81,6 +81,12 @@
 (declaim (ftype (function (*) pathname)
 		system-source-file))
 
+(define-condition not-resolve(cell-error)
+  ()
+  (:report (lambda(condition stream)
+             (format stream "Can not resolve asd file for ~S."
+                     (cell-error-name condition)))))
+
 (let((cache(make-hash-table :test #'equal)))
   (defun system-source-file(thing)
     (labels(
