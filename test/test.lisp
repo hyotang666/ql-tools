@@ -5,6 +5,27 @@
   )
 (in-package :ql-tools.test)
 
+(defmacro with-package-clean(()&body body)
+  `(let*((newbies
+           '())
+         (*macroexpand-hook*
+           (lambda(expander form environment)
+             (when(typep form
+                         '(cons (eql defpackage)
+                                *))
+               (push (second form)
+                     newbies))
+             (funcall expander form environment))))
+     (unwind-protect(progn ,@body)
+       (handler-bind((package-error
+                       (lambda(condition)
+                         (let((restart
+                                (find-restart 'continue condition)))
+                           (when restart
+                             (invoke-restart restart))))))
+         (format *trace-output* "~&Deleting packages ~:S" newbies)
+         (mapc #'delete-package newbies)))))
+
 (defun test()
   (labels((restarter(restart)
 	    (lambda(c)
@@ -26,7 +47,8 @@
 		       (let((target(or (find "test" (ql-dist:system-files release)
 					     :test #'search)
 				       (ql-dist:name release))))
-			 (asdf:test-system (uiop:split-name-type target))
+                         (with-package-clean()
+                           (asdf:test-system (uiop:split-name-type target)))
 			 (format t "~&~S on ~S test finished."
 				 target
 				 (ql-dist:name(ql-dist:dist release))))
