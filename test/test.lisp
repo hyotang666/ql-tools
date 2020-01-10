@@ -6,25 +6,22 @@
 (in-package :ql-tools.test)
 
 (defmacro with-package-clean(()&body body)
-  `(let*((newbies
-           '())
-         (*macroexpand-hook*
-           (lambda(expander form environment)
-             (when(typep form
-                         '(cons (eql defpackage)
-                                *))
-               (push (second form)
-                     newbies))
-             (funcall expander form environment))))
+  `(let*((oldies
+           (copy-list(list-all-packages))))
      (unwind-protect(progn ,@body)
-       (handler-bind((package-error
-                       (lambda(condition)
-                         (let((restart
-                                (find-restart 'continue condition)))
-                           (when restart
-                             (invoke-restart restart))))))
-         (format *trace-output* "~&Deleting packages ~:S" newbies)
-         (mapc #'delete-package newbies)))))
+       (let((diff
+              (set-difference (list-all-packages)
+                              oldies)))
+         (if(null diff)
+           (warn "~&No packages are made.")
+           (handler-bind((package-error
+                           (lambda(condition)
+                             (let((restart
+                                    (find-restart 'continue condition)))
+                               (when restart
+                                 (invoke-restart restart))))))
+             (format *trace-output* "~&Deleting packages ~:S" diff)
+             (mapc #'delete-package diff)))))))
 
 (defun test()
   (labels((restarter(restart)
