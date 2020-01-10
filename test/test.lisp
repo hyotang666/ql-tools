@@ -5,24 +5,6 @@
   )
 (in-package :ql-tools.test)
 
-(defmacro with-package-clean(()&body body)
-  `(let*((oldies
-           (copy-list(list-all-packages))))
-     (unwind-protect(progn ,@body)
-       (let((diff
-              (set-difference (list-all-packages)
-                              oldies)))
-         (if(null diff)
-           (warn "~&No packages are made.")
-           (handler-bind((package-error
-                           (lambda(condition)
-                             (let((restart
-                                    (find-restart 'continue condition)))
-                               (when restart
-                                 (invoke-restart restart))))))
-             (format *trace-output* "~&Deleting packages ~:S" diff)
-             (mapc #'delete-package diff)))))))
-
 (defun test()
   (labels((restarter(restart)
 	    (lambda(c)
@@ -44,8 +26,7 @@
 		       (let((target(or (find "test" (ql-dist:system-files release)
 					     :test #'search)
 				       (ql-dist:name release))))
-                         (with-package-clean()
-                           (asdf:test-system (uiop:split-name-type target)))
+                         (asdf:test-system (uiop:split-name-type target))
 			 (format t "~&~S on ~S test finished."
 				 target
 				 (ql-dist:name(ql-dist:dist release))))
