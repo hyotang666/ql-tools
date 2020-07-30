@@ -1,7 +1,7 @@
 ; vim: ft=lisp
 (in-package :asdf)
 (defsystem #:ql-tools.installed
-  :version "0.2.2"
+  :version "0.2.3"
   :depends-on
   (
    "cl-ansi-text" ; Colorinzing text.

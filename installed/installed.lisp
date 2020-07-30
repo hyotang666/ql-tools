@@ -1,58 +1,54 @@
-(defpackage :ql-tools.installed(:use :cl)
+(defpackage :ql-tools.installed
+  (:use :cl)
   (:export #:installed))
+
 (in-package :ql-tools.installed)
 
 (defvar *alt-descriptions* (make-hash-table :test #'equal))
 
-(defun installed(&optional regex)
+(defun installed (&optional regex)
   (loop :for (name author description) :in (informations)
-	:when (or (and regex
-		       (ppcre:scan regex description))
-		  (null regex))
-	:do (format t "~&~%~A~@[ by ~A~]~%~A"
-		    (cl-ansi-text:green (string-upcase name))
-		    author description)))
+        :when (or (and regex (ppcre:scan regex description)) (null regex))
+          :do (format t "~&~%~A~@[ by ~A~]~%~A"
+                      (cl-ansi-text:green (string-upcase name)) author
+                      description)))
 
-(defun informations()
+(defun informations ()
   (loop :for release :in (ql-tools.utility:all-releases)
-	:collect (information release)))
+        :collect (information release)))
 
-(declaim (ftype (function (ql-dist:release)
-			  (values (cons string
-					(cons (or null cons string)
-					      (cons string null)))
-				  &optional))
-		information))
-(defun information(release)
-  (let((system(system release)))
+(declaim
+ (ftype (function (ql-dist:release)
+         (values (cons string (cons (or null cons string) (cons string null)))
+                 &optional))
+        information))
+
+(defun information (release)
+  (let ((system (system release)))
     (if system
-      (list (asdf:coerce-name system)
-	    (ignore-errors(asdf:system-author system))
-	    (or (ignore-errors(asdf:system-description system))
-		"No description"))
-      (list (ql-dist:name release)
-	    nil
-	    ";; WARNING: Could not detect correct system."))))
+        (list (asdf:coerce-name system)
+              (ignore-errors (asdf:system-author system))
+              (or (ignore-errors (asdf:system-description system))
+                  "No description"))
+        (list (ql-dist:name release) nil
+              ";; WARNING: Could not detect correct system."))))
 
-(declaim (ftype (function (ql-dist:release) (values (or null asdf:system)
-						    &optional))
-		system))
+(declaim
+ (ftype (function (ql-dist:release) (values (or null asdf:system) &optional))
+        system))
 
 (defun system (release)
-  (or (asdf:find-system(ql-dist:name release)nil)
-      (let((system-files(remove "test" (ql-dist:system-files release)
-				:test #'search)))
-	(when(and system-files
-		  (null(cdr system-files)))
-	  (asdf:find-system (uiop:split-name-type(car system-files))
-			    nil)))))
+  (or (asdf:find-system (ql-dist:name release) nil)
+      (let ((system-files
+             (remove "test" (ql-dist:system-files release) :test #'search)))
+        (when (and system-files (null (cdr system-files)))
+          (asdf:find-system (uiop:split-name-type (car system-files)) nil)))))
 
 ;;; Some systems does not have its own asdf::description.
 ;;; Here, we retreave dessctions from its README or elsewhere.
 
 (defmacro def (key description)
-  `(setf(gethash ,key *alt-descriptions*)
-     ,description))
+  `(setf (gethash ,key *alt-descriptions*) ,description))
 
 #|
 (def "access" "Unifying data-strucure accessing")
@@ -95,3 +91,4 @@
 (def "lfarm" "Distributing work across machines using the lparallel API.")
 (def "xmls" "Small, Simple, non-validating xml parser.")
 |#
+
