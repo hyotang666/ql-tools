@@ -57,7 +57,7 @@
 (defun bottom-directory-namestring (pathname)
   (car (last (pathname-directory pathname))))
 
-(declaim (ftype (function (*) (values string &optional)) coerce-name))
+(declaim (ftype (function (t) (values string &optional)) coerce-name))
 
 (let ((cache (make-hash-table :test #'equal)))
   (defun coerce-name (thing)
@@ -76,7 +76,7 @@
         (ql-dist:system (ql-dist:name thing))
         (pathname (do-pathname thing))))))
 
-(declaim (ftype (function (*) (values pathname &optional)) system-source-file))
+(declaim (ftype (function (t) (values pathname &optional)) system-source-file))
 
 (define-condition not-resolve (cell-error) ()
   (:report
@@ -176,7 +176,7 @@
             (diverge (ql-dist:find-system system)))))))
 
 (declaim
- (ftype (function (*) (values pathnames &optional)) system-source-files))
+ (ftype (function (t) (values pathnames &optional)) system-source-files))
 
 (defun system-source-files (thing)
   (etypecase thing
@@ -195,7 +195,7 @@
                                                                   "*.asd"))
                                          (asd file))))))))
 
-(declaim (ftype (function (* *) (values boolean &optional)) system-name=))
+(declaim (ftype (function (t t) (values boolean &optional)) system-name=))
 
 (defun system-name= (thing1 thing2)
   (string= (coerce-name thing1) (coerce-name thing2)))
