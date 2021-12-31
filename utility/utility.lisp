@@ -46,9 +46,15 @@
   (labels ((retrieve-if (predicate string)
              (remove-if (complement predicate) string)))
     (values ; to discard second value.
-            (parse-integer
-              (retrieve-if #'digit-char-p
-                           (bottom-directory-namestring pathname))))))
+            (or (parse-integer
+		  (retrieve-if #'digit-char-p
+			       (bottom-directory-namestring pathname))
+		  :junk-allowed t)
+		;; Directory name does not have any integer.
+		;; Use quicklisp version instead.
+		(parse-integer
+		  (retrieve-if #'digit-char-p
+			       (ql-dist:version (ql-dist:dist "quicklisp"))))))))
 
 (declaim
  (ftype (function (pathname-designator) (values string &optional))
