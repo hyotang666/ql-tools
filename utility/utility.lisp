@@ -24,6 +24,8 @@
 
 (in-package :ql-tools.utility)
 
+(declaim (optimize speed))
+
 (deftype pathnames () "List of pathnames" 'list)
 
 (deftype system-designator () '(or keyword string))
@@ -44,7 +46,7 @@
 
 (defun version<=pathname (pathname)
   (labels ((retrieve-if (predicate string)
-             (remove-if (complement predicate) string)))
+             (remove-if-not predicate string)))
     (values ; to discard second value.
             (or (parse-integer
 		  (retrieve-if #'digit-char-p
@@ -63,7 +65,7 @@
 (defun bottom-directory-namestring (pathname)
   (car (last (pathname-directory pathname))))
 
-(declaim (ftype (function (t) (values string &optional)) coerce-name))
+(declaim (ftype (function (t) (values simple-string &optional)) coerce-name))
 
 (let ((cache (make-hash-table :test #'equal)))
   (defun coerce-name (thing)
@@ -112,6 +114,8 @@
              (may-collect-asd (root bottom result)
                (let (acc)
                  (flet ((searcher (directory)
+			  #+sbcl ; due to fail to infer (pathname-name asd) return type.
+			  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
                           (dolist
                               (asd (uiop:directory-files directory "*.asd"))
                             (if (search (pathname-name asd) bottom)
@@ -140,7 +144,7 @@
 
 (declaim (ftype (function (pathname) (values boolean &optional)) asd-p))
 
-(defun asd-p (pathname) (string= "asd" (pathname-type pathname)))
+(defun asd-p (pathname) (string= "asd" (the simple-string (pathname-type pathname))))
 
 (declaim
  (ftype (function (system-designator) (values pathnames &optional))
@@ -155,7 +159,7 @@
                    (if system
                        (do-main system)
                        (fallback))
-                   (complement #'<)
+		   (lambda (x y) (declare (fixnum x y)) (not (< x y)))
                    :key #'version<=pathname))
                (do-main (system)
                  (loop :for pathname
@@ -266,7 +270,7 @@
 
 (defun prompt (choices &rest format-args)
   (with-output-to-string (*standard-output*)
-    (loop :for n :upfrom 0
+    (loop :for n :of-type fixnum :upfrom 0
           :for choice :in choices
           :do (format t "~%~3D: ~A" n choice)
           :finally (apply #'format t format-args))))
